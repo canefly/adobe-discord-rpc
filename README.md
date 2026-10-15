@@ -22,8 +22,21 @@ Adobe Discord Rich Presence is an extension that connects Adobe apps with Discor
 
 [UXP Version of extension](https://github.com/teeteeteeteetee/adobe-discord-rpc-uxp) (in progress)
 
-# Please do not clone the repository, get the extension from "Releases" https://github.com/teeteeteeteetee/adobe-discord-rpc/releases
-# Users on Apple Silicon need to run Photoshop through Rosetta and turn on Legacy Extensions through Preferences and restart the application.
+## 🚀 Easy Installation (Windows)
+
+### Option 1: Standalone Installer (`.exe`)
+1. Download **`Adobe-Discord-RPC-Setup.exe`** from [Releases](https://github.com/canefly/adobe-discord-rpc/releases).
+2. Run the installer and click **Install**.
+3. It will automatically install the extension and enable `PlayerDebugMode` in the Windows Registry!
+4. Launch After Effects or Premiere Pro and open:
+   `Window` -> `Extensions` -> `Discord RPC`
+
+### Option 2: 1-Click Batch Script (`install.bat`)
+1. Download this repository as a `.zip` (Code -> Download ZIP) and extract it.
+2. Double-click **`install.bat`**.
+3. It will copy the extension files and configure the registry in seconds!
+
+> *Users on Apple Silicon need to run Photoshop through Rosetta and turn on Legacy Extensions through Preferences.*
 
 ![](demo/preview.gif)
 
