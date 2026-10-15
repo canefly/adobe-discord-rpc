@@ -1,70 +1,68 @@
-//theres now try-catch because of AEFT 2019 and below
+// After Effects Host Script for Discord Rich Presence
 
-//ae stuff
 var AEItems;
 var renderItemLock;
-var comp
-
-//try catch for 2019 versions
 
 function state(){
-
-    try{
-        var x = app.project.activeItem.name;
-
-        if(app.project.renderQueue.rendering){
-            return "Rendering"
+    try {
+        if (!app.project) {
+            return "No project opened.";
         }
 
-        if(app.project.activeItem instanceof CompItem) {
-            comp = app.project.activeItem.name + " (" + app.project.activeItem.layers.length + ")";
-            x = app.project.activeItem.name + " (" + app.project.activeItem.layers.length + ")";
-        };
-
-        for(var i = 1; i <= app.project.numItems; i++){
-          if(app.project.item(i) instanceof CompItem) {
-              if(app.project.activeItem instanceof CompItem) return x;
-              return app.project.activeItem.name;
-          }
+        if (app.project.renderQueue && app.project.renderQueue.rendering) {
+            return "Rendering";
         }
 
-        //clear comp
-        comp = undefined
-        return x;
-    }catch(e){
-        //ig im not allowed to use if(!comp)
-        if(!comp) return "No composition."; 
-        return comp;
+        // Active viewer or active item check
+        if (app.project.activeItem && (app.project.activeItem instanceof CompItem)) {
+            var layerCount = app.project.activeItem.layers ? app.project.activeItem.layers.length : 0;
+            return app.project.activeItem.name + " (" + layerCount + ")";
+        }
+
+        if (app.project.activeItem) {
+            return app.project.activeItem.name;
+        }
+
+        return "No active composition.";
+    } catch(e) {
+        return "No composition.";
     }
-
 }
 
 function details(){
-    try{
-        var x = app.project.file.displayName;
-
-        if(!x){
-            x = "Untitled Project.aep";
+    try {
+        if (!app.project) {
+            return "No Project";
         }
 
-        return x;
-    }catch(e){
+        if (app.project.file) {
+            if (app.project.file.displayName) {
+                return app.project.file.displayName;
+            }
+            if (app.project.file.name) {
+                return app.project.file.name;
+            }
+        }
+
+        return "Untitled Project.aep";
+    } catch(e) {
         return "Untitled Project.aep";
     }
 }
 
 function smallImageKey(){
-    try{
-        return app.project.toolType;
-    }catch(e){
+    try {
+        return app.project && app.project.toolType ? app.project.toolType : "";
+    } catch(e) {
         return "";
     }
 }
 
 function smallImageText(){
-    try{
-        return "Editing " + details();
-    }catch(e){
+    try {
+        var det = details();
+        return det ? "Editing " + det : "";
+    } catch(e) {
         return "";
     }
 }
@@ -74,46 +72,38 @@ function largeImageText(){
 }
 
 function partySize(){
-    try{
-        if(app.project.renderQueue.rendering){
-        var info;
-        var item;
-
-        for (var index = 1; index < AEItems + 1; index++) {
-
-            item = app.project.renderQueue.item(index).status
-            if(item === RQItemStatus.RENDERING){
-                info = index
-                //stops looping
-                index = AEItems
+    try {
+        if (app.project && app.project.renderQueue && app.project.renderQueue.rendering) {
+            var info = 0;
+            var total = AEItems || app.project.renderQueue.numItems;
+            for (var index = 1; index <= total; index++) {
+                var item = app.project.renderQueue.item(index);
+                if (item && item.status === RQItemStatus.RENDERING) {
+                    info = index;
+                    break;
+                }
             }
+            return info;
         }
-
-        return info;
-
-        }else{
-            return 0;
-        }
-    }catch(e){
+        return 0;
+    } catch(e) {
         return 0;
     }
 }
 
 function partyMax(){
-    try{
-        if(app.project.renderQueue.rendering){
+    try {
+        if (app.project && app.project.renderQueue && app.project.renderQueue.rendering) {
             if (!renderItemLock) {
-                AEItems = app.project.renderQueue.numItems
-                renderItemLock = app.project.renderQueue.numItems
+                AEItems = app.project.renderQueue.numItems;
+                renderItemLock = app.project.renderQueue.numItems;
             }
-            
             return renderItemLock;
-
-        }else{
+        } else {
             renderItemLock = null;
             return 0;
         }
-    }catch(e){
+    } catch(e) {
         return 0;
     }
 }

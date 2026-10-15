@@ -1,67 +1,15 @@
 {
-  "name": "discord-rpc",
-  "version": "v0.0.5",
-  "description": "Discord Rich Presence extension for your adobe apps!",
-  "main": "./client-src/src/index.js",
+  "name": "adobe-discord-rpc",
+  "version": "1.0.2",
+  "description": "Discord Rich Presence for Adobe Creative Cloud applications",
+  "main": "index.html",
   "scripts": {
-    "start": "npm run client:dev-server",
-    "client:dev-server": "webpack-dev-server --config ./build-scripts/webpack.client.config.js --env.target=web --mode development --open",
-    "build:dev": "node ./build-scripts/build.js development",
-    "build:prod": "node ./build-scripts/build.js production",
-    "deploy:dev": "node ./build-scripts/deploy.js development",
-    "deploy:prod": "node ./build-scripts/deploy.js production",
-    "archive": "node ./build-scripts/archive.js",
-    "release:dev": "npm run build:dev && npm run deploy:dev",
-    "release:prod": "npm run build:prod && npm run deploy:prod && npm run archive",
-    "b": "babel ./client/js --out-dir ./client/out",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node scripts/build.js"
   },
-  "author": {
-    "name": "Tee",
-    "url": "https://github.com/teeteeteeteetee/adobe-discord-rpc"
-  },
-  "license": "ISC",
-  "devDependencies": {
-    "@babel/core": "^7.22.6",
-    "@babel/preset-env": "^7.22.6",
-    "@tailwindcss/typography": "^0.5.9",
-    "autoprefixer": "^10.4.14",
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.5",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
-    "chalk": "^2.4.2",
-    "css-loader": "^6.8.1",
-    "cssnano": "^5.1.15",
-    "extract-text-webpack-plugin": "^4.0.0-beta.0",
-    "file-loader": "^1.1.11",
-    "hard-source-webpack-plugin": "^0.13.1",
-    "html-webpack-plugin": "^5.5.3",
-    "mini-css-extract-plugin": "^2.7.6",
-    "mkdirp": "^0.5.6",
-    "postcss": "^8.4.24",
-    "postcss-import": "^15.1.0",
-    "postcss-loader": "^7.3.3",
-    "postcss-preset-env": "^8.5.1",
-    "style-loader": "^3.3.3",
-    "tailwindcss": "^3.3.2",
-    "tailwindcss-cli": "^0.1.2",
-    "url-loader": "^4.1.1",
-    "webpack": "^5.88.1",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "4",
-    "webpack-node-externals": "^1.7.2",
-    "zxp-sign-cmd": "^1.0.0"
-  },
-  "dependencies": {
-    "@babel/plugin-proposal-optional-catch-binding": "^7.18.6",
-    "axios": "^1.4.0",
-    "console-feed": "^3.4.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-icons": "^4.10.1"
-  }
+  "author": "Tee",
+  "contributors": [
+    "Cane",
+    "Antigravity"
+  ],
+  "license": "MIT"
 }

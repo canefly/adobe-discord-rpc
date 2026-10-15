@@ -1,33 +1,27 @@
-/*
- * File: index.css
- * Project: discord-rpc
- * File Created: Tuesday, 7th February 2023 1:05:16 am
- * Author: Tee (tee@stainless.love)
- * Github: https://github.com/teeteeteeteetee
- * Discord: Tee#0001
- * 
- * Last Modified: Saturday, 25th November 2023 2:49:42 pm
- * Modified By: Tee (tee@stainless.love)
- * 
- * Copyright (c) 2023 Tee, Stainless Love
- */
- 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
-@font-face {
-    font-family: "Azeri-Bold";
-    src: url("../assets/AzeriSans-Bold.ttf") format('truetype');
-}
-@font-face {
-    font-family: "Azerir-Regular";
-    src: url("../assets/AzeriSans-Regular.ttf") format('truetype');
-}
-@font-face {
-    font-family: "Azerir-Black";
-    src: url("../assets/AzeriSans-Black.ttf") format('truetype');
-}
-body {
-    @apply bg-primary;
-}
+      import API from "!../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js";
+      import domAPI from "!../../node_modules/style-loader/dist/runtime/styleDomAPI.js";
+      import insertFn from "!../../node_modules/style-loader/dist/runtime/insertBySelector.js";
+      import setAttributes from "!../../node_modules/style-loader/dist/runtime/setAttributesWithoutAttributes.js";
+      import insertStyleElement from "!../../node_modules/style-loader/dist/runtime/insertStyleElement.js";
+      import styleTagTransformFn from "!../../node_modules/style-loader/dist/runtime/styleTagTransform.js";
+      import content, * as namedExport from "!!../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!./index.css";
+      
+      
+
+var options = {};
+
+options.styleTagTransform = styleTagTransformFn;
+options.setAttributes = setAttributes;
+
+      options.insert = insertFn.bind(null, "head");
+    
+options.domAPI = domAPI;
+options.insertStyleElement = insertStyleElement;
+
+var update = API(content, options);
+
+
+
+export * from "!!../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!./index.css";
+       export default content && content.locals ? content.locals : undefined;

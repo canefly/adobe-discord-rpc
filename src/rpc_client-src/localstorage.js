@@ -1,18 +1,11 @@
 /*
  * File: localstorage.js
  * Project: discord-rpc-client
- * File Created: Sunday, 12th February 2023 9:36:50 pm
- * Author: Tee (tee@stainless.love)
- * Github: https://github.com/teeteeteeteetee
- * Discord: Tee#0001
- * 
- * Last Modified: Sunday, 7th April 2024 11:52:17 am
- * Modified By: Tee (tee@stainless.love)
- * 
- * Copyright (c) 2023 Tee, Stainless Love
+ * Author: Tee & Antigravity
+ * Copyright (c) 2026
  */
 
-const csInterface = new CSInterface();
+const csInterface = typeof CSInterface !== 'undefined' ? new CSInterface() : null;
 
 export const rpcConfigurationTemplate = {
     enabled: {
@@ -43,9 +36,18 @@ export const rpcConfigurationTemplate = {
         type: "checkbox",
         hidden: false
     },
+    fakeElapsed: {
+        enabled: false,
+        hours: 4,
+        minutes: 20,
+        description: "Spoof elapsed time on Discord",
+        name: "Spoof Elapsed Time",
+        type: "timeSpoof",
+        hidden: false
+    },
     largeImageKey: {
         enabled: true,
-        value: "logo2",
+        value: "old",
         description: "",
         name: "Large Icon",
         type: "dropdown",
@@ -86,7 +88,7 @@ export const rpcConfigurationTemplate = {
         type: "checkbox",
         hidden: true
     }
-}
+};
 
 export const extensionConfigurationTemplate = {
     updateNotification: {
@@ -103,31 +105,71 @@ export const extensionConfigurationTemplate = {
         type: "checkbox",
         hidden: false
     },
-}
+};
 
 export function setConfiguration(name, configuration){
-    window.localStorage.setItem(name, JSON.stringify(configuration));
-    csInterface.dispatchEvent('com.tee.panel.settings')
+    try {
+        window.localStorage.setItem(name, JSON.stringify(configuration));
+    } catch(e) {
+        console.error("Failed to write to localStorage:", e);
+    }
+    if (csInterface && typeof CSEvent !== 'undefined') {
+        try {
+            const event = new CSEvent('com.tee.panel.settings', 'APPLICATION');
+            event.data = { name, configuration };
+            csInterface.dispatchEvent(event);
+        } catch(e) {
+            console.error("Failed to dispatch settings event:", e);
+        }
+    }
 }
 
 export function getConfiguration(name){
-    return JSON.parse(window.localStorage.getItem(name))
+    try {
+        const item = window.localStorage.getItem(name);
+        return item ? JSON.parse(item) : null;
+    } catch(e) {
+        console.error("Failed to get configuration:", e);
+        return null;
+    }
 }
 
 export function getConfigurations(){
-    const conf = {}
-    Object.keys(window.localStorage).forEach(key => {
-        conf[key] = getConfiguration(key)
-    })
-    
-    return conf
+    const conf = {};
+    try {
+        Object.keys(window.localStorage).forEach(key => {
+            conf[key] = getConfiguration(key);
+        });
+    } catch(e) {
+        console.error("Failed to get configurations:", e);
+    }
+
+    if (!conf.rpc) {
+        conf.rpc = JSON.parse(JSON.stringify(rpcConfigurationTemplate));
+        setConfiguration("rpc", conf.rpc);
+    } else if (!conf.rpc.fakeElapsed) {
+        conf.rpc.fakeElapsed = JSON.parse(JSON.stringify(rpcConfigurationTemplate.fakeElapsed));
+        setConfiguration("rpc", conf.rpc);
+    }
+    if (!conf.extension) {
+        conf.extension = JSON.parse(JSON.stringify(extensionConfigurationTemplate));
+        setConfiguration("extension", conf.extension);
+    }
+
+    return conf;
 }
 
 export function compare(obj, prop) {
-    return JSON.stringify(obj) === JSON.stringify(prop) ?  true : false;
-};
+    return JSON.stringify(obj) === JSON.stringify(prop);
+}
 
 export function resetConfiguration(){
-    window.localStorage.clear()
-    location.reload()
+    try {
+        window.localStorage.clear();
+    } catch(e) {
+        console.error("Failed to clear localStorage:", e);
+    }
+    setConfiguration("rpc", JSON.parse(JSON.stringify(rpcConfigurationTemplate)));
+    setConfiguration("extension", JSON.parse(JSON.stringify(extensionConfigurationTemplate)));
+    return getConfigurations();
 }

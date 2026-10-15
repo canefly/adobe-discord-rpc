@@ -4,9 +4,21 @@
 
 ![](demo/demo.gif)
 
-# Adobe Discord Rich Presence
+# Adobe Discord Rich Presence (Enhanced Edition by Cane)
 
-Adobe Discord Rich Presence is an extension that connects Adobe apps with Discord and provides information for your profile. The extension auto-launches on app start up!
+> **Maintained & Upgraded by Cane** ([@canefly](https://github.com/canefly))  
+> Original architecture by [Tee](https://github.com/teeteeteeteetee/adobe-discord-rpc).
+
+### ✨ Enhancements in this Fork:
+- ⏱️ **Spoof Elapsed Time**: Set custom fake elapsed hours & minutes with live ticking timers and one-click presets (1h to 48h).
+- ⚡ **Live Status & Sync**: Real-time Discord presence connection badge with an instant manual sync trigger.
+- 🎨 **Discord Dark UI**: Complete visual overhaul with modern Discord styling and inline status banners.
+- 🛠️ **ExtendScript Diagnostics**: Built-in host probe dashboard to monitor After Effects and Premiere Pro events live.
+- 🩹 **Bug Fixes**: Resolved AE comp name caching bugs, CEP JSON parse errors, and configuration update issues.
+
+---
+
+Adobe Discord Rich Presence is an extension that connects Adobe apps with Discord and provides rich information on your profile. The extension auto-launches on app startup!
 
 [UXP Version of extension](https://github.com/teeteeteeteetee/adobe-discord-rpc-uxp) (in progress)
 

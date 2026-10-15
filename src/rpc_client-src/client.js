@@ -1,3 +1,5 @@
+
+
 /*
  * File: client.js
  * Project: discord-rpc-client
@@ -69,4 +71,6 @@ module.exports = {
         name: 'Media Encoder',
         id: '756149565429776453'
     }
-}
+};
+
+//# sourceURL=webpack://discord-rpc/./src/rpc_client-src/client.js?

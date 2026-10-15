@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Copyright 2018 Adobe. All rights reserved.This file is licensed to you under the Apache License, Version 2.0 (the "License");you may not use this file except in compliance with the License. You may obtain a copyof the License at http://www.apache.org/licenses/LICENSE-2.0Unless required by applicable law or agreed to in writing, software distributed underthe License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONSOF ANY KIND, either express or implied. See the License for the specific languagegoverning permissions and limitations under the License. -->
+<ExtensionManifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   ExtensionBundleId="com.tee.discord-rpc"
+                   ExtensionBundleVersion="1.0.1"
+                   ExtensionBundleName="Discord Rich Presence"
+                   Version="8.0">
+  <ExtensionList>
+    <Extension Id="com.tee.discord-rpc-panel" Version="1.0.1" />
+        <Extension Id="com.tee.discord-rpc.after-effects" Version="1.0.1" />
+    <Extension Id="com.tee.discord-rpc.incopy" Version="1.0.1" />
+    <Extension Id="com.tee.discord-rpc.audition" Version="1.0.1" />
+    <Extension Id="com.tee.discord-rpc.dreamweaver" Version="1.0.1" />
+    <Extension Id="com.tee.discord-rpc.animate" Version="1.0.1" />
+    <Extension Id="com.tee.discord-rpc.indesign" Version="1.0.1" />
+    <Extension Id="com.tee.discord-rpc.illustrator" Version="1.0.1" />
+    <Extension Id="com.tee.discord-rpc.photoshop" Version="1.0.1" />
+    <Extension Id="com.tee.discord-rpc.premiere-pro" Version="1.0.1" />
+    <Extension Id="com.tee.discord-rpc.prelude" Version="1.0.1" />
+    <Extension Id="com.tee.discord-rpc.premiere-rush" Version="1.0.1" />
+    <Extension Id="com.tee.discord-rpc.media-encoder" Version="1.0.1" />
+
+    </ExtensionList>
+  <ExecutionEnvironment>
+    <HostList>
+        <Host Name="PHXS" Version="[0.0,99.9]" />
+        <Host Name="PHSP" Version="[0.0,99.9]" />
+        <Host Name="IDSN" Version="[0.0,99.9]" />
+        <Host Name="AICY" Version="[0.0,99.9]" />
+        <Host Name="ILST" Version="[0.0,99.9]" />
+        <Host Name="PPRO" Version="[0.0,99.9]" />
+        <Host Name="AEFT" Version="[0.0,99.9]" />
+        <Host Name="PRLD" Version="[0.0,99.9]" />
+        <Host Name="FLPR" Version="[0.0,99.9]" />
+        <Host Name="DRWV" Version="[0.0,99.9]" />
+        <Host Name="AUDT" Version="[0.0,99.9]" />
+    </HostList>
+    <LocaleList>
+      <Locale Code="All" />
+    </LocaleList>
+    <RequiredRuntimeList>
+      <RequiredRuntime Name="CSXS" Version="8.0" />
+    </RequiredRuntimeList>
+  </ExecutionEnvironment>
+  <DispatchInfoList>
+
+    <Extension Id="com.tee.discord-rpc-panel">
+      <DispatchInfo>
+        <Resources>
+          <MainPath>./index.html</MainPath>
+          <CEFCommandLine>
+              <Parameter>--enable-nodejs</Parameter>
+              <Parameter>--mixed-context</Parameter>
+          </CEFCommandLine>
+        </Resources>
+        <Lifecycle>
+          <AutoVisible>true</AutoVisible>
+        </Lifecycle>
+        <UI>
+          <Type>Panel</Type>
+          <Menu>Discord Rich Presence</Menu>
+          <Geometry>
+            <Size>
+              <Width>350</Width>
+              <Height>500</Height>
+            </Size>
+            <!-- <MinSize>
+              <Width>350</Width>
+              <Height>500</Height>
+            </MinSize> -->
+            <MaxSize>
+              <Width>350</Width>
+              <Height>500</Height>
+            </MaxSize>
+          </Geometry>
+          <Icons>
+              <Icon Type="Normal">./icons/favicon.ico</Icon>
+              <Icon Type="RollOver">./icons/favicon.ico</Icon>
+              <Icon Type="DarkNormal">./icons/favicon.ico</Icon>
+              <Icon Type="DarkRollOver">./icons/favicon.ico</Icon>
+          </Icons>
+        </UI>
+      </DispatchInfo>
+    </Extension>
+
+  
+
+  <Extension Id="com.tee.discord-rpc.after-effects">
+    <HostList>
+      <Host Name="AEFT" />
+    </HostList>
+    <DispatchInfo>
+      <Resources>
+        <MainPath>./rpc.html</MainPath>
+        <ScriptPath>./host/AEFT.jsx</ScriptPath>
+        <CEFCommandLine>
+          <Parameter>--allow-file-access</Parameter>
+          <Parameter>--allow-file-access-from-files</Parameter>
+          <Parameter>--disable-application-cache</Parameter>
+          <Parameter>--enable-nodejs</Parameter>
+          <Parameter>--mixed-context</Parameter>
+        </CEFCommandLine>
+      </Resources>
+      <Lifecycle>
+        <AutoVisible>false</AutoVisible>
+        <StartOn>
+          <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+          <Event>applicationActivate</Event>
+          <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+          <Event>com.adobe.events.flash.documentChanged</Event>
+        </StartOn>
+      </Lifecycle>
+      <UI>
+        <Type>Custom</Type>
+        <Geometry>
+          <Size>
+            <Height>500</Height>
+            <Width>500</Width>
+          </Size>
+        </Geometry>
+      </UI>
+    </DispatchInfo>
+  </Extension>
+
+
+
+  <Extension Id="com.tee.discord-rpc.incopy">
+    <HostList>
+      <Host Name="AICY" />
+    </HostList>
+    <DispatchInfo>
+      <Resources>
+        <MainPath>./rpc.html</MainPath>
+        <ScriptPath>./host/AICY.jsx</ScriptPath>
+        <CEFCommandLine>
+          <Parameter>--allow-file-access</Parameter>
+          <Parameter>--allow-file-access-from-files</Parameter>
+          <Parameter>--disable-application-cache</Parameter>
+          <Parameter>--enable-nodejs</Parameter>
+          <Parameter>--mixed-context</Parameter>
+        </CEFCommandLine>
+      </Resources>
+      <Lifecycle>
+        <AutoVisible>false</AutoVisible>
+        <StartOn>
+          <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+          <Event>applicationActivate</Event>
+          <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+          <Event>com.adobe.events.flash.documentChanged</Event>
+        </StartOn>
+      </Lifecycle>
+      <UI>
+        <Type>Custom</Type>
+        <Geometry>
+          <Size>
+            <Height>500</Height>
+            <Width>500</Width>
+          </Size>
+        </Geometry>
+      </UI>
+    </DispatchInfo>
+  </Extension>
+
+
+
+  <Extension Id="com.tee.discord-rpc.audition">
+    <HostList>
+      <Host Name="AUDT" />
+    </HostList>
+    <DispatchInfo>
+      <Resources>
+        <MainPath>./rpc.html</MainPath>
+        <ScriptPath>./host/AUDT.jsx</ScriptPath>
+        <CEFCommandLine>
+          <Parameter>--allow-file-access</Parameter>
+          <Parameter>--allow-file-access-from-files</Parameter>
+          <Parameter>--disable-application-cache</Parameter>
+          <Parameter>--enable-nodejs</Parameter>
+          <Parameter>--mixed-context</Parameter>
+        </CEFCommandLine>
+      </Resources>
+      <Lifecycle>
+        <AutoVisible>false</AutoVisible>
+        <StartOn>
+          <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+          <Event>applicationActivate</Event>
+          <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+          <Event>com.adobe.events.flash.documentChanged</Event>
+        </StartOn>
+      </Lifecycle>
+      <UI>
+        <Type>Custom</Type>
+        <Geometry>
+          <Size>
+            <Height>500</Height>
+            <Width>500</Width>
+          </Size>
+        </Geometry>
+      </UI>
+    </DispatchInfo>
+  </Extension>
+
+
+
+  <Extension Id="com.tee.discord-rpc.dreamweaver">
+    <HostList>
+      <Host Name="DRWV" />
+    </HostList>
+    <DispatchInfo>
+      <Resources>
+        <MainPath>./rpc.html</MainPath>
+        <ScriptPath>./host/DRWV.jsx</ScriptPath>
+        <CEFCommandLine>
+          <Parameter>--allow-file-access</Parameter>
+          <Parameter>--allow-file-access-from-files</Parameter>
+          <Parameter>--disable-application-cache</Parameter>
+          <Parameter>--enable-nodejs</Parameter>
+          <Parameter>--mixed-context</Parameter>
+        </CEFCommandLine>
+      </Resources>
+      <Lifecycle>
+        <AutoVisible>false</AutoVisible>
+        <StartOn>
+          <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+          <Event>applicationActivate</Event>
+          <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+          <Event>com.adobe.events.flash.documentChanged</Event>
+        </StartOn>
+      </Lifecycle>
+      <UI>
+        <Type>Custom</Type>
+        <Geometry>
+          <Size>
+            <Height>500</Height>
+            <Width>500</Width>
+          </Size>
+        </Geometry>
+      </UI>
+    </DispatchInfo>
+  </Extension>
+
+
+
+  <Extension Id="com.tee.discord-rpc.animate">
+    <HostList>
+      <Host Name="FLPR" />
+    </HostList>
+    <DispatchInfo>
+      <Resources>
+        <MainPath>./rpc.html</MainPath>
+        <ScriptPath>./host/FLPR.jsx</ScriptPath>
+        <CEFCommandLine>
+          <Parameter>--allow-file-access</Parameter>
+          <Parameter>--allow-file-access-from-files</Parameter>
+          <Parameter>--disable-application-cache</Parameter>
+          <Parameter>--enable-nodejs</Parameter>
+          <Parameter>--mixed-context</Parameter>
+        </CEFCommandLine>
+      </Resources>
+      <Lifecycle>
+        <AutoVisible>false</AutoVisible>
+        <StartOn>
+          <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+          <Event>applicationActivate</Event>
+          <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+          <Event>com.adobe.events.flash.documentChanged</Event>
+        </StartOn>
+      </Lifecycle>
+      <UI>
+        <Type>Custom</Type>
+        <Geometry>
+          <Size>
+            <Height>500</Height>
+            <Width>500</Width>
+          </Size>
+        </Geometry>
+      </UI>
+    </DispatchInfo>
+  </Extension>
+
+
+
+  <Extension Id="com.tee.discord-rpc.indesign">
+    <HostList>
+      <Host Name="IDSN" />
+    </HostList>
+    <DispatchInfo>
+      <Resources>
+        <MainPath>./rpc.html</MainPath>
+        <ScriptPath>./host/IDSN.jsx</ScriptPath>
+        <CEFCommandLine>
+          <Parameter>--allow-file-access</Parameter>
+          <Parameter>--allow-file-access-from-files</Parameter>
+          <Parameter>--disable-application-cache</Parameter>
+          <Parameter>--enable-nodejs</Parameter>
+          <Parameter>--mixed-context</Parameter>
+        </CEFCommandLine>
+      </Resources>
+      <Lifecycle>
+        <AutoVisible>false</AutoVisible>
+        <StartOn>
+          <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+          <Event>applicationActivate</Event>
+          <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+          <Event>com.adobe.events.flash.documentChanged</Event>
+        </StartOn>
+      </Lifecycle>
+      <UI>
+        <Type>Custom</Type>
+        <Geometry>
+          <Size>
+            <Height>500</Height>
+            <Width>500</Width>
+          </Size>
+        </Geometry>
+      </UI>
+    </DispatchInfo>
+  </Extension>
+
+
+
+  <Extension Id="com.tee.discord-rpc.illustrator">
+    <HostList>
+      <Host Name="ILST" />
+    </HostList>
+    <DispatchInfo>
+      <Resources>
+        <MainPath>./rpc.html</MainPath>
+        <ScriptPath>./host/ILST.jsx</ScriptPath>
+        <CEFCommandLine>
+          <Parameter>--allow-file-access</Parameter>
+          <Parameter>--allow-file-access-from-files</Parameter>
+          <Parameter>--disable-application-cache</Parameter>
+          <Parameter>--enable-nodejs</Parameter>
+          <Parameter>--mixed-context</Parameter>
+        </CEFCommandLine>
+      </Resources>
+      <Lifecycle>
+        <AutoVisible>false</AutoVisible>
+        <StartOn>
+          <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+          <Event>applicationActivate</Event>
+          <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+          <Event>com.adobe.events.flash.documentChanged</Event>
+        </StartOn>
+      </Lifecycle>
+      <UI>
+        <Type>Custom</Type>
+        <Geometry>
+          <Size>
+            <Height>500</Height>
+            <Width>500</Width>
+          </Size>
+        </Geometry>
+      </UI>
+    </DispatchInfo>
+  </Extension>
+
+
+
+  <Extension Id="com.tee.discord-rpc.photoshop">
+    <HostList>
+      <Host Name="PHSP" />
+    </HostList>
+    <DispatchInfo>
+      <Resources>
+        <MainPath>./rpc.html</MainPath>
+        <ScriptPath>./host/PHSP.jsx</ScriptPath>
+        <CEFCommandLine>
+          <Parameter>--allow-file-access</Parameter>
+          <Parameter>--allow-file-access-from-files</Parameter>
+          <Parameter>--disable-application-cache</Parameter>
+          <Parameter>--enable-nodejs</Parameter>
+          <Parameter>--mixed-context</Parameter>
+        </CEFCommandLine>
+      </Resources>
+      <Lifecycle>
+        <AutoVisible>false</AutoVisible>
+        <StartOn>
+          <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+          <Event>applicationActivate</Event>
+          <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+          <Event>com.adobe.events.flash.documentChanged</Event>
+        </StartOn>
+      </Lifecycle>
+      <UI>
+        <Type>Custom</Type>
+        <Geometry>
+          <Size>
+            <Height>500</Height>
+            <Width>500</Width>
+          </Size>
+        </Geometry>
+      </UI>
+    </DispatchInfo>
+  </Extension>
+
+
+
+  <Extension Id="com.tee.discord-rpc.photoshop">
+    <HostList>
+      <Host Name="PHXS" />
+    </HostList>
+    <DispatchInfo>
+      <Resources>
+        <MainPath>./rpc.html</MainPath>
+        <ScriptPath>./host/PHXS.jsx</ScriptPath>
+        <CEFCommandLine>
+          <Parameter>--allow-file-access</Parameter>
+          <Parameter>--allow-file-access-from-files</Parameter>
+          <Parameter>--disable-application-cache</Parameter>
+          <Parameter>--enable-nodejs</Parameter>
+          <Parameter>--mixed-context</Parameter>
+        </CEFCommandLine>
+      </Resources>
+      <Lifecycle>
+        <AutoVisible>false</AutoVisible>
+        <StartOn>
+          <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+          <Event>applicationActivate</Event>
+          <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+          <Event>com.adobe.events.flash.documentChanged</Event>
+        </StartOn>
+      </Lifecycle>
+      <UI>
+        <Type>Custom</Type>
+        <Geometry>
+          <Size>
+            <Height>500</Height>
+            <Width>500</Width>
+          </Size>
+        </Geometry>
+      </UI>
+    </DispatchInfo>
+  </Extension>
+
+
+
+  <Extension Id="com.tee.discord-rpc.premiere-pro">
+    <HostList>
+      <Host Name="PPRO" />
+    </HostList>
+    <DispatchInfo>
+      <Resources>
+        <MainPath>./rpc.html</MainPath>
+        <ScriptPath>./host/PPRO.jsx</ScriptPath>
+        <CEFCommandLine>
+          <Parameter>--allow-file-access</Parameter>
+          <Parameter>--allow-file-access-from-files</Parameter>
+          <Parameter>--disable-application-cache</Parameter>
+          <Parameter>--enable-nodejs</Parameter>
+          <Parameter>--mixed-context</Parameter>
+        </CEFCommandLine>
+      </Resources>
+      <Lifecycle>
+        <AutoVisible>false</AutoVisible>
+        <StartOn>
+          <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+          <Event>applicationActivate</Event>
+          <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+          <Event>com.adobe.events.flash.documentChanged</Event>
+        </StartOn>
+      </Lifecycle>
+      <UI>
+        <Type>Custom</Type>
+        <Geometry>
+          <Size>
+            <Height>500</Height>
+            <Width>500</Width>
+          </Size>
+        </Geometry>
+      </UI>
+    </DispatchInfo>
+  </Extension>
+
+
+
+  <Extension Id="com.tee.discord-rpc.prelude">
+    <HostList>
+      <Host Name="PRLD" />
+    </HostList>
+    <DispatchInfo>
+      <Resources>
+        <MainPath>./rpc.html</MainPath>
+        <ScriptPath>./host/PRLD.jsx</ScriptPath>
+        <CEFCommandLine>
+          <Parameter>--allow-file-access</Parameter>
+          <Parameter>--allow-file-access-from-files</Parameter>
+          <Parameter>--disable-application-cache</Parameter>
+          <Parameter>--enable-nodejs</Parameter>
+          <Parameter>--mixed-context</Parameter>
+        </CEFCommandLine>
+      </Resources>
+      <Lifecycle>
+        <AutoVisible>false</AutoVisible>
+        <StartOn>
+          <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+          <Event>applicationActivate</Event>
+          <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+          <Event>com.adobe.events.flash.documentChanged</Event>
+        </StartOn>
+      </Lifecycle>
+      <UI>
+        <Type>Custom</Type>
+        <Geometry>
+          <Size>
+            <Height>500</Height>
+            <Width>500</Width>
+          </Size>
+        </Geometry>
+      </UI>
+    </DispatchInfo>
+  </Extension>
+
+
+
+  <Extension Id="com.tee.discord-rpc.premiere-rush">
+    <HostList>
+      <Host Name="RUSH" />
+    </HostList>
+    <DispatchInfo>
+      <Resources>
+        <MainPath>./rpc.html</MainPath>
+        <ScriptPath>./host/RUSH.jsx</ScriptPath>
+        <CEFCommandLine>
+          <Parameter>--allow-file-access</Parameter>
+          <Parameter>--allow-file-access-from-files</Parameter>
+          <Parameter>--disable-application-cache</Parameter>
+          <Parameter>--enable-nodejs</Parameter>
+          <Parameter>--mixed-context</Parameter>
+        </CEFCommandLine>
+      </Resources>
+      <Lifecycle>
+        <AutoVisible>false</AutoVisible>
+        <StartOn>
+          <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+          <Event>applicationActivate</Event>
+          <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+          <Event>com.adobe.events.flash.documentChanged</Event>
+        </StartOn>
+      </Lifecycle>
+      <UI>
+        <Type>Custom</Type>
+        <Geometry>
+          <Size>
+            <Height>500</Height>
+            <Width>500</Width>
+          </Size>
+        </Geometry>
+      </UI>
+    </DispatchInfo>
+  </Extension>
+
+
+
+  <Extension Id="com.tee.discord-rpc.media-encoder">
+    <HostList>
+      <Host Name="MEDIA_ENCODER" />
+    </HostList>
+    <DispatchInfo>
+      <Resources>
+        <MainPath>./rpc.html</MainPath>
+        <ScriptPath>./host/MEDIA_ENCODER.jsx</ScriptPath>
+        <CEFCommandLine>
+          <Parameter>--allow-file-access</Parameter>
+          <Parameter>--allow-file-access-from-files</Parameter>
+          <Parameter>--disable-application-cache</Parameter>
+          <Parameter>--enable-nodejs</Parameter>
+          <Parameter>--mixed-context</Parameter>
+        </CEFCommandLine>
+      </Resources>
+      <Lifecycle>
+        <AutoVisible>false</AutoVisible>
+        <StartOn>
+          <Event>com.adobe.csxs.events.ApplicationInitialized</Event>
+          <Event>applicationActivate</Event>
+          <Event>com.adobe.csxs.events.ApplicationActivate</Event>
+          <Event>com.adobe.events.flash.documentChanged</Event>
+        </StartOn>
+      </Lifecycle>
+      <UI>
+        <Type>Custom</Type>
+        <Geometry>
+          <Size>
+            <Height>500</Height>
+            <Width>500</Width>
+          </Size>
+        </Geometry>
+      </UI>
+    </DispatchInfo>
+  </Extension>
+
+
+
+  </DispatchInfoList>
+</ExtensionManifest>

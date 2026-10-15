@@ -85,8 +85,8 @@ export function setCustom({url}){
 }
 
 export default function getIcon ({ className, version }) {
-  // <img className="rounded-sm w-[60px] h-[60px]" src="../../assets/AEFT.png" />  
-  
-
-  return <img className={className} src={icons[getApplicationID()][version]} />
+  const appId = (typeof getApplicationID === 'function' ? getApplicationID() : null) || 'AEFT';
+  const appIcons = icons[appId] || icons.AEFT;
+  const verIndex = (version === 1 && appIcons.length > 1) ? 1 : 0;
+  return <img className={className} src={appIcons[verIndex]} alt={appId} />;
 }
