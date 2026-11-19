@@ -76,3 +76,25 @@ function partyMax(){
         return 0;
     }
 }
+
+// ---- Fun-feature helpers (used by the presence engine) ----
+function extra(){
+    try{
+        var d = app.activeDocument;
+        var w = Math.round(d.width.as("px"));
+        var h = Math.round(d.height.as("px"));
+        return w + "\u00D7" + h + " px \u2022 " + d.layers.length + " layers";
+    }catch(e){
+        return "";
+    }
+}
+
+// Changes whenever the user edits, so the engine can tell "working" from "AFK".
+function activitySig(){
+    try{
+        var d = app.activeDocument;
+        return d.historyStates.length + ":" + d.activeHistoryState.name;
+    }catch(e){
+        return "";
+    }
+}

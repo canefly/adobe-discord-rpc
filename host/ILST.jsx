@@ -41,3 +41,23 @@ function partyMax(){
         return 0;
     }
 }
+
+// ---- Fun-feature helpers (used by the presence engine) ----
+function extra(){
+    try{
+        var d = app.activeDocument;
+        return Math.round(d.width) + "\u00D7" + Math.round(d.height) + " pt \u2022 " + d.layers.length + " layers";
+    }catch(e){
+        return "";
+    }
+}
+
+// Changes whenever artwork or selection changes.
+function activitySig(){
+    try{
+        var d = app.activeDocument;
+        return d.pageItems.length + ":" + d.selection.length;
+    }catch(e){
+        return "";
+    }
+}

@@ -173,6 +173,162 @@ function ConfigTimeSpoof({ id, data, onChange }) {
     );
 }
 
+// ---------------------------------------------------------------------------
+// Controls for the fun-feature settings
+// ---------------------------------------------------------------------------
+const fieldStyle = {
+    backgroundColor: '#2b2d31',
+    color: '#ffffff',
+    border: '1px solid #4e5058',
+    borderRadius: '4px',
+    padding: '5px 8px',
+    fontSize: '12px',
+    outline: 'none',
+    boxSizing: 'border-box'
+};
+
+const panelStyle = {
+    marginTop: '8px',
+    padding: '10px 12px',
+    backgroundColor: '#1e1f22',
+    borderRadius: '6px',
+    border: '1px solid #35373c'
+};
+
+const hintStyle = { fontSize: '11px', color: '#949ba4' };
+
+// Label + description on the left, on/off checkbox on the right.
+function FeatureHeader({ id, name, description, checked, onToggle }) {
+    return (
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', color: '#dbdee1' }}>
+            <div>
+                <label
+                    style={{ userSelect: 'none', fontSize: '13px', cursor: 'pointer', color: '#f2f3f5', fontWeight: '400' }}
+                    htmlFor={id}
+                >
+                    {name}
+                </label>
+                {description ? <div style={hintStyle}>{description}</div> : null}
+            </div>
+            <ConfigCheckbox id={id} checked={checked} onChange={onToggle} />
+        </div>
+    );
+}
+
+function ConfigStatusLines({ id, data, onChange }) {
+    const enabled = !!data?.enabled;
+    const lines = Array.isArray(data?.lines) ? data.lines : [];
+    return (
+        <div style={{ width: '100%', padding: '6px 0' }}>
+            <FeatureHeader
+                id={id}
+                name={data?.name || "Rotating Status Lines"}
+                description={data?.description}
+                checked={enabled}
+                onToggle={() => onChange({ ...data, enabled: !enabled })}
+            />
+            {enabled && (
+                <div style={panelStyle}>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '8px' }}>
+                        <span style={{ fontSize: '11px', color: '#dbdee1' }}>Show as</span>
+                        <select
+                            value={data.mode || "replace"}
+                            onChange={(e) => onChange({ ...data, mode: e.target.value })}
+                            style={fieldStyle}
+                        >
+                            <option value="replace">Replace state line</option>
+                            <option value="append">Append to state line</option>
+                        </select>
+                        <span style={{ fontSize: '11px', color: '#dbdee1' }}>every</span>
+                        <input
+                            type="number"
+                            min="15"
+                            max="3600"
+                            value={data.intervalSec || 30}
+                            onChange={(e) => onChange({ ...data, intervalSec: Math.max(15, parseInt(e.target.value, 10) || 15) })}
+                            style={{ ...fieldStyle, width: '58px', textAlign: 'center' }}
+                        />
+                        <span style={{ fontSize: '11px', color: '#dbdee1' }}>sec (min 15)</span>
+                    </div>
+                    <textarea
+                        rows={4}
+                        placeholder={"One phrase per line.\nLeave empty to use the theme for the app you're in."}
+                        value={lines.join("\n")}
+                        onChange={(e) => onChange({ ...data, lines: e.target.value.split("\n") })}
+                        style={{ ...fieldStyle, width: '100%', resize: 'vertical', fontFamily: 'inherit' }}
+                    />
+                </div>
+            )}
+        </div>
+    );
+}
+
+function ConfigIdle({ id, data, onChange }) {
+    const enabled = !!data?.enabled;
+    return (
+        <div style={{ width: '100%', padding: '6px 0' }}>
+            <FeatureHeader
+                id={id}
+                name={data?.name || "Idle / AFK Detection"}
+                description={data?.description}
+                checked={enabled}
+                onToggle={() => onChange({ ...data, enabled: !enabled })}
+            />
+            {enabled && (
+                <div style={{ ...panelStyle, display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '11px', color: '#dbdee1' }}>Go idle after</span>
+                    <input
+                        type="number"
+                        min="1"
+                        max="240"
+                        value={data.minutes || 10}
+                        onChange={(e) => onChange({ ...data, minutes: Math.max(1, Math.min(240, parseInt(e.target.value, 10) || 1)) })}
+                        style={{ ...fieldStyle, width: '58px', textAlign: 'center' }}
+                    />
+                    <span style={{ fontSize: '11px', color: '#dbdee1' }}>minutes with no changes in the app</span>
+                    <div style={{ ...hintStyle, width: '100%' }}>
+                        Based on edits, tool and selection changes, so very long single-brush strokes can look idle.
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function ConfigWebhook({ id, data, onChange }) {
+    const enabled = !!data?.enabled;
+    const url = data?.url || "";
+    const valid = url.trim() === "" || /^https:\/\/(discord|discordapp)\.com\/api\/webhooks\/\d+\/[\w-]+$/i.test(url.trim());
+    return (
+        <div style={{ width: '100%', padding: '6px 0' }}>
+            <FeatureHeader
+                id={id}
+                name={data?.name || "Discord Webhook"}
+                description={data?.description}
+                checked={enabled}
+                onToggle={() => onChange({ ...data, enabled: !enabled })}
+            />
+            {enabled && (
+                <div style={panelStyle}>
+                    <input
+                        type="password"
+                        autoComplete="off"
+                        placeholder="https://discord.com/api/webhooks/..."
+                        value={url}
+                        onChange={(e) => onChange({ ...data, url: e.target.value })}
+                        style={{ ...fieldStyle, width: '100%', borderColor: valid ? '#4e5058' : '#f23f43' }}
+                    />
+                    <div style={{ ...hintStyle, marginTop: '6px' }}>
+                        {valid
+                            ? "Posts \"Just finished a render\" to that channel. Currently After Effects renders only."
+                            : "That doesn't look like a Discord webhook URL."}
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
 export default function ConfigItem({ title, template, group, config, setConfig }) {
     const handleCheckboxChange = (key) => {
         if (!config || !config[group] || !config[group][key]) return;
@@ -228,10 +384,21 @@ export default function ConfigItem({ title, template, group, config, setConfig }
             const isCheckbox = template[key].type === "checkbox";
             const isDropdown = template[key].type === "dropdown";
             const isTimeSpoof = template[key].type === "timeSpoof";
+            const type = template[key].type;
+            const CustomControl =
+                type === "statusLines" ? ConfigStatusLines :
+                type === "idle" ? ConfigIdle :
+                type === "webhook" ? ConfigWebhook : null;
 
             return (
                 <li key={key} style={{ padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
-                    {isTimeSpoof ? (
+                    {CustomControl ? (
+                        <CustomControl
+                            id={key}
+                            data={{ ...template[key], ...itemData }}
+                            onChange={(newVal) => handleCustomChange(key, newVal)}
+                        />
+                    ) : isTimeSpoof ? (
                         <ConfigTimeSpoof
                             id={key}
                             data={itemData}

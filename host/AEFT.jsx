@@ -107,3 +107,29 @@ function partyMax(){
         return 0;
     }
 }
+
+// ---- Fun-feature helpers (used by the presence engine) ----
+function extra(){
+    try{
+        var c = app.project.activeItem;
+        if (c instanceof CompItem) {
+            return c.width + "\u00D7" + c.height + " \u2022 " + (Math.round(c.duration * 10) / 10) + "s comp";
+        }
+        return "";
+    }catch(e){
+        return "";
+    }
+}
+
+// Changes when the user scrubs, adds layers, or changes selection.
+function activitySig(){
+    try{
+        var c = app.project.activeItem;
+        if (c instanceof CompItem) {
+            return c.time + ":" + c.numLayers + ":" + c.selectedLayers.length + ":" + app.project.numItems;
+        }
+        return String(app.project.numItems);
+    }catch(e){
+        return "";
+    }
+}

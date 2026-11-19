@@ -2713,6 +2713,124 @@ function ConfigTimeSpoof({ id, data, onChange }) {
     }
   ), /* @__PURE__ */ import_react.default.createElement("span", { style: { fontSize: "11px", color: "#dbdee1" } }, "mins")), /* @__PURE__ */ import_react.default.createElement("div", { style: { marginLeft: "auto", fontSize: "11px", color: "#23a55a", fontWeight: "500" } }, "~", String(hours).padStart(2, "0"), ":", String(minutes).padStart(2, "0"), ":00 elapsed"))));
 }
+const fieldStyle = {
+  backgroundColor: "#2b2d31",
+  color: "#ffffff",
+  border: "1px solid #4e5058",
+  borderRadius: "4px",
+  padding: "5px 8px",
+  fontSize: "12px",
+  outline: "none",
+  boxSizing: "border-box"
+};
+const panelStyle = {
+  marginTop: "8px",
+  padding: "10px 12px",
+  backgroundColor: "#1e1f22",
+  borderRadius: "6px",
+  border: "1px solid #35373c"
+};
+const hintStyle = { fontSize: "11px", color: "#949ba4" };
+function FeatureHeader({ id, name, description, checked, onToggle }) {
+  return /* @__PURE__ */ import_react.default.createElement("div", { style: { display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", color: "#dbdee1" } }, /* @__PURE__ */ import_react.default.createElement("div", null, /* @__PURE__ */ import_react.default.createElement(
+    "label",
+    {
+      style: { userSelect: "none", fontSize: "13px", cursor: "pointer", color: "#f2f3f5", fontWeight: "400" },
+      htmlFor: id
+    },
+    name
+  ), description ? /* @__PURE__ */ import_react.default.createElement("div", { style: hintStyle }, description) : null), /* @__PURE__ */ import_react.default.createElement(ConfigCheckbox, { id, checked, onChange: onToggle }));
+}
+function ConfigStatusLines({ id, data, onChange }) {
+  const enabled = !!data?.enabled;
+  const lines = Array.isArray(data?.lines) ? data.lines : [];
+  return /* @__PURE__ */ import_react.default.createElement("div", { style: { width: "100%", padding: "6px 0" } }, /* @__PURE__ */ import_react.default.createElement(
+    FeatureHeader,
+    {
+      id,
+      name: data?.name || "Rotating Status Lines",
+      description: data?.description,
+      checked: enabled,
+      onToggle: () => onChange({ ...data, enabled: !enabled })
+    }
+  ), enabled && /* @__PURE__ */ import_react.default.createElement("div", { style: panelStyle }, /* @__PURE__ */ import_react.default.createElement("div", { style: { display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap", marginBottom: "8px" } }, /* @__PURE__ */ import_react.default.createElement("span", { style: { fontSize: "11px", color: "#dbdee1" } }, "Show as"), /* @__PURE__ */ import_react.default.createElement(
+    "select",
+    {
+      value: data.mode || "replace",
+      onChange: (e) => onChange({ ...data, mode: e.target.value }),
+      style: fieldStyle
+    },
+    /* @__PURE__ */ import_react.default.createElement("option", { value: "replace" }, "Replace state line"),
+    /* @__PURE__ */ import_react.default.createElement("option", { value: "append" }, "Append to state line")
+  ), /* @__PURE__ */ import_react.default.createElement("span", { style: { fontSize: "11px", color: "#dbdee1" } }, "every"), /* @__PURE__ */ import_react.default.createElement(
+    "input",
+    {
+      type: "number",
+      min: "15",
+      max: "3600",
+      value: data.intervalSec || 30,
+      onChange: (e) => onChange({ ...data, intervalSec: Math.max(15, parseInt(e.target.value, 10) || 15) }),
+      style: { ...fieldStyle, width: "58px", textAlign: "center" }
+    }
+  ), /* @__PURE__ */ import_react.default.createElement("span", { style: { fontSize: "11px", color: "#dbdee1" } }, "sec (min 15)")), /* @__PURE__ */ import_react.default.createElement(
+    "textarea",
+    {
+      rows: 4,
+      placeholder: "One phrase per line.\nLeave empty to use the theme for the app you're in.",
+      value: lines.join("\n"),
+      onChange: (e) => onChange({ ...data, lines: e.target.value.split("\n") }),
+      style: { ...fieldStyle, width: "100%", resize: "vertical", fontFamily: "inherit" }
+    }
+  )));
+}
+function ConfigIdle({ id, data, onChange }) {
+  const enabled = !!data?.enabled;
+  return /* @__PURE__ */ import_react.default.createElement("div", { style: { width: "100%", padding: "6px 0" } }, /* @__PURE__ */ import_react.default.createElement(
+    FeatureHeader,
+    {
+      id,
+      name: data?.name || "Idle / AFK Detection",
+      description: data?.description,
+      checked: enabled,
+      onToggle: () => onChange({ ...data, enabled: !enabled })
+    }
+  ), enabled && /* @__PURE__ */ import_react.default.createElement("div", { style: { ...panelStyle, display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" } }, /* @__PURE__ */ import_react.default.createElement("span", { style: { fontSize: "11px", color: "#dbdee1" } }, "Go idle after"), /* @__PURE__ */ import_react.default.createElement(
+    "input",
+    {
+      type: "number",
+      min: "1",
+      max: "240",
+      value: data.minutes || 10,
+      onChange: (e) => onChange({ ...data, minutes: Math.max(1, Math.min(240, parseInt(e.target.value, 10) || 1)) }),
+      style: { ...fieldStyle, width: "58px", textAlign: "center" }
+    }
+  ), /* @__PURE__ */ import_react.default.createElement("span", { style: { fontSize: "11px", color: "#dbdee1" } }, "minutes with no changes in the app"), /* @__PURE__ */ import_react.default.createElement("div", { style: { ...hintStyle, width: "100%" } }, "Based on edits, tool and selection changes, so very long single-brush strokes can look idle.")));
+}
+function ConfigWebhook({ id, data, onChange }) {
+  const enabled = !!data?.enabled;
+  const url = data?.url || "";
+  const valid = url.trim() === "" || /^https:\/\/(discord|discordapp)\.com\/api\/webhooks\/\d+\/[\w-]+$/i.test(url.trim());
+  return /* @__PURE__ */ import_react.default.createElement("div", { style: { width: "100%", padding: "6px 0" } }, /* @__PURE__ */ import_react.default.createElement(
+    FeatureHeader,
+    {
+      id,
+      name: data?.name || "Discord Webhook",
+      description: data?.description,
+      checked: enabled,
+      onToggle: () => onChange({ ...data, enabled: !enabled })
+    }
+  ), enabled && /* @__PURE__ */ import_react.default.createElement("div", { style: panelStyle }, /* @__PURE__ */ import_react.default.createElement(
+    "input",
+    {
+      type: "password",
+      autoComplete: "off",
+      placeholder: "https://discord.com/api/webhooks/...",
+      value: url,
+      onChange: (e) => onChange({ ...data, url: e.target.value }),
+      style: { ...fieldStyle, width: "100%", borderColor: valid ? "#4e5058" : "#f23f43" }
+    }
+  ), /* @__PURE__ */ import_react.default.createElement("div", { style: { ...hintStyle, marginTop: "6px" } }, valid ? 'Posts "Just finished a render" to that channel. Currently After Effects renders only.' : "That doesn't look like a Discord webhook URL.")));
+}
 function ConfigItem({ title, template, group, config, setConfig }) {
   const handleCheckboxChange = (key) => {
     if (!config || !config[group] || !config[group][key]) return;
@@ -2762,7 +2880,16 @@ function ConfigItem({ title, template, group, config, setConfig }) {
     const isCheckbox = template[key].type === "checkbox";
     const isDropdown = template[key].type === "dropdown";
     const isTimeSpoof = template[key].type === "timeSpoof";
-    return /* @__PURE__ */ import_react.default.createElement("li", { key, style: { padding: "6px 0", borderBottom: "1px solid rgba(255,255,255,0.03)" } }, isTimeSpoof ? /* @__PURE__ */ import_react.default.createElement(
+    const type = template[key].type;
+    const CustomControl = type === "statusLines" ? ConfigStatusLines : type === "idle" ? ConfigIdle : type === "webhook" ? ConfigWebhook : null;
+    return /* @__PURE__ */ import_react.default.createElement("li", { key, style: { padding: "6px 0", borderBottom: "1px solid rgba(255,255,255,0.03)" } }, CustomControl ? /* @__PURE__ */ import_react.default.createElement(
+      CustomControl,
+      {
+        id: key,
+        data: { ...template[key], ...itemData },
+        onChange: (newVal) => handleCustomChange(key, newVal)
+      }
+    ) : isTimeSpoof ? /* @__PURE__ */ import_react.default.createElement(
       ConfigTimeSpoof,
       {
         id: key,
@@ -3338,8 +3465,52 @@ var import_react = __toESM(require("react"));
 var import_ConfigItem = __toESM(require("../components/ConfigItem"));
 var import__ = require("..");
 var import_localstorage = require("../../rpc_client-src/localstorage");
+const APP_NAMES = {
+  PHXS: "Photoshop",
+  PHSP: "Photoshop",
+  PPRO: "Premiere Pro",
+  AEFT: "After Effects",
+  ILST: "Illustrator",
+  IDSN: "InDesign",
+  AUDT: "Audition",
+  FLPR: "Animate",
+  DRWV: "Dreamweaver",
+  AICY: "InCopy",
+  PRLD: "Prelude",
+  RUSH: "Premiere Rush",
+  MEDIA_ENCODER: "Media Encoder"
+};
+function StatsPanel({ stats }) {
+  const unlocked = stats.unlocked || {};
+  const apps = Object.keys(stats.perApp || {}).sort((a, b) => stats.perApp[b] - stats.perApp[a]);
+  const tile = { flex: 1, backgroundColor: "#1e1f22", border: "1px solid #35373c", borderRadius: "6px", padding: "8px 10px", textAlign: "center" };
+  const big = { color: "#ffffff", fontSize: "15px", fontWeight: "700" };
+  const small = { color: "#949ba4", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.05em" };
+  return /* @__PURE__ */ import_react.default.createElement("div", { style: { paddingBottom: "10px" } }, /* @__PURE__ */ import_react.default.createElement("p", { style: { fontSize: "11px", fontWeight: "700", color: "#949ba4", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "8px" } }, "Stats & Achievements"), /* @__PURE__ */ import_react.default.createElement("div", { style: { display: "flex", gap: "8px", marginBottom: "10px" } }, /* @__PURE__ */ import_react.default.createElement("div", { style: tile }, /* @__PURE__ */ import_react.default.createElement("div", { style: big }, (0, import_localstorage.formatDuration)(stats.totalMs || 0)), /* @__PURE__ */ import_react.default.createElement("div", { style: small }, "Time logged")), /* @__PURE__ */ import_react.default.createElement("div", { style: tile }, /* @__PURE__ */ import_react.default.createElement("div", { style: big }, stats.sessions || 0), /* @__PURE__ */ import_react.default.createElement("div", { style: small }, "Sessions")), /* @__PURE__ */ import_react.default.createElement("div", { style: tile }, /* @__PURE__ */ import_react.default.createElement("div", { style: big }, stats.exports || 0), /* @__PURE__ */ import_react.default.createElement("div", { style: small }, "Renders"))), apps.length > 0 && /* @__PURE__ */ import_react.default.createElement("div", { style: { marginBottom: "10px", fontSize: "12px", color: "#dbdee1" } }, apps.map((id) => /* @__PURE__ */ import_react.default.createElement("div", { key: id, style: { display: "flex", justifyContent: "space-between", padding: "2px 0" } }, /* @__PURE__ */ import_react.default.createElement("span", null, APP_NAMES[id] || id), /* @__PURE__ */ import_react.default.createElement("span", { style: { color: "#949ba4" } }, (0, import_localstorage.formatDuration)(stats.perApp[id]))))), /* @__PURE__ */ import_react.default.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: "6px" } }, import_localstorage.ACHIEVEMENTS.map((a) => {
+    const got = !!unlocked[a.id];
+    return /* @__PURE__ */ import_react.default.createElement(
+      "div",
+      {
+        key: a.id,
+        title: `${a.name}: ${a.desc}`,
+        style: {
+          width: "78px",
+          padding: "6px 4px",
+          textAlign: "center",
+          borderRadius: "6px",
+          border: got ? "1px solid #5865F2" : "1px solid #35373c",
+          backgroundColor: got ? "rgba(88, 101, 242, 0.15)" : "#1e1f22",
+          opacity: got ? 1 : 0.45
+        }
+      },
+      /* @__PURE__ */ import_react.default.createElement("div", { style: { fontSize: "18px" } }, got ? a.icon : "\u{1F512}"),
+      /* @__PURE__ */ import_react.default.createElement("div", { style: { fontSize: "10px", color: "#f2f3f5", fontWeight: "600", marginTop: "2px" } }, a.name)
+    );
+  })));
+}
 function Config() {
   const [config, setConfig] = (0, import_react.useState)({});
+  const [stats, setStats] = (0, import_react.useState)((0, import_localstorage.getStats)());
   const [statusBanner, setStatusBanner] = (0, import_react.useState)(null);
   const timerRef = (0, import_react.useRef)(null);
   const showBanner = (type, text, autoClearMs = 4e3) => {
@@ -3366,23 +3537,49 @@ function Config() {
         console.error("Error reading ack:", err);
       }
     };
+    const handleStats = (e) => {
+      try {
+        let data = e.data;
+        if (typeof data === "string") data = JSON.parse(data);
+        if (data && typeof data === "object") setStats(data);
+      } catch (err) {
+        console.error("Error reading stats:", err);
+      }
+    };
+    const handleAchievement = (e) => {
+      try {
+        let data = e.data;
+        if (typeof data === "string") data = JSON.parse(data);
+        if (Array.isArray(data) && data.length) {
+          showBanner("success", `Achievement unlocked: ${data.join(", ")}`, 6e3);
+        }
+      } catch (err) {
+        console.error("Error reading achievement:", err);
+      }
+    };
     if (window.csInterface) {
       window.csInterface.addEventListener("com.tee.rpc.config.ack", handleAck);
+      window.csInterface.addEventListener("com.tee.rpc.stats", handleStats);
+      window.csInterface.addEventListener("com.tee.rpc.achievement", handleAchievement);
     }
+    (0, import__.dispatchEvent)("com.tee.rpc.update", {});
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
       if (window.csInterface) {
         window.csInterface.removeEventListener("com.tee.rpc.config.ack", handleAck);
+        window.csInterface.removeEventListener("com.tee.rpc.stats", handleStats);
+        window.csInterface.removeEventListener("com.tee.rpc.achievement", handleAchievement);
       }
     };
   }, []);
   const handleSaveConfig = () => {
     showBanner("info", "Applying configuration to Discord RPC...", 0);
     try {
-      for (const [key, value] of Object.entries(config)) {
+      const { stats: _ignoredStats, ...settingsOnly } = config;
+      for (const [key, value] of Object.entries(settingsOnly)) {
         (0, import_localstorage.setConfiguration)(key, value);
       }
-      (0, import__.dispatchEvent)("com.tee.rpc.config", config);
+      (0, import__.dispatchEvent)("com.tee.rpc.config", settingsOnly);
       timerRef.current = setTimeout(() => {
         showBanner("success", "Configuration applied & Discord presence updated!");
       }, 400);
@@ -3448,6 +3645,15 @@ function Config() {
       template: import_localstorage.rpcConfigurationTemplate
     }
   ), /* @__PURE__ */ import_react.default.createElement("div", { style: { margin: "14px 0", borderTop: "1px solid #35373c" } }), /* @__PURE__ */ import_react.default.createElement(
+    import_ConfigItem.default,
+    {
+      group: "features",
+      config,
+      setConfig,
+      title: "Fun Features",
+      template: import_localstorage.featuresConfigurationTemplate
+    }
+  ), /* @__PURE__ */ import_react.default.createElement("div", { style: { margin: "14px 0", borderTop: "1px solid #35373c" } }), /* @__PURE__ */ import_react.default.createElement(StatsPanel, { stats }), /* @__PURE__ */ import_react.default.createElement("div", { style: { margin: "14px 0", borderTop: "1px solid #35373c" } }), /* @__PURE__ */ import_react.default.createElement(
     import_ConfigItem.default,
     {
       group: "extension",
@@ -4214,12 +4420,25 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var localstorage_exports = {};
 __export(localstorage_exports, {
+  ACHIEVEMENTS: () => ACHIEVEMENTS,
+  APP_THEMES: () => APP_THEMES,
   compare: () => compare,
+  defaultStats: () => defaultStats,
+  evaluateAchievements: () => evaluateAchievements,
   extensionConfigurationTemplate: () => extensionConfigurationTemplate,
+  featuresConfigurationTemplate: () => featuresConfigurationTemplate,
+  flairText: () => flairText,
+  formatDuration: () => formatDuration,
   getConfiguration: () => getConfiguration,
   getConfigurations: () => getConfigurations,
+  getStats: () => getStats,
+  getThemeLines: () => getThemeLines,
+  isWebhookUrl: () => isWebhookUrl,
+  pickStatusLine: () => pickStatusLine,
+  prettyTool: () => prettyTool,
   resetConfiguration: () => resetConfiguration,
   rpcConfigurationTemplate: () => rpcConfigurationTemplate,
+  saveStats: () => saveStats,
   setConfiguration: () => setConfiguration
 });
 module.exports = __toCommonJS(localstorage_exports);
@@ -4322,6 +4541,84 @@ const extensionConfigurationTemplate = {
     hidden: false
   }
 };
+const featuresConfigurationTemplate = {
+  statusLines: {
+    enabled: false,
+    type: "statusLines",
+    name: "Rotating Status Lines",
+    description: "Cycle through fun phrases. Leave the list empty to use the per-app theme.",
+    mode: "replace",
+    // "replace" the state line, or "append" to it
+    intervalSec: 30,
+    useThemes: true,
+    lines: [],
+    hidden: false
+  },
+  sessionFlair: {
+    enabled: true,
+    type: "checkbox",
+    name: 'Session Timer Flair ("3h deep")',
+    description: "",
+    hidden: false
+  },
+  hideFileName: {
+    enabled: false,
+    type: "checkbox",
+    name: "Privacy: Hide File & Layer Names",
+    description: "",
+    hidden: false
+  },
+  extraInfo: {
+    enabled: true,
+    type: "checkbox",
+    name: "Show Canvas / Layer / Timeline Info",
+    description: "",
+    hidden: false
+  },
+  toolAware: {
+    enabled: true,
+    type: "checkbox",
+    name: "Show Active Tool",
+    description: "",
+    hidden: false
+  },
+  idle: {
+    enabled: true,
+    type: "idle",
+    name: "Idle / AFK Detection",
+    description: "Switch to a break message when nothing changes for a while.",
+    minutes: 10,
+    hidden: false
+  },
+  celebrations: {
+    enabled: true,
+    type: "checkbox",
+    name: "Render Celebrations",
+    description: "",
+    hidden: false
+  },
+  webhook: {
+    enabled: false,
+    type: "webhook",
+    name: "Post to a Discord Webhook When a Render Finishes",
+    description: "Opt-in. The webhook URL stays on this computer.",
+    url: "",
+    hidden: false
+  },
+  trackStats: {
+    enabled: true,
+    type: "checkbox",
+    name: "Track Stats & Achievements",
+    description: "",
+    hidden: false
+  }
+};
+const GROUP_TEMPLATES = {
+  rpc: rpcConfigurationTemplate,
+  extension: extensionConfigurationTemplate,
+  features: featuresConfigurationTemplate
+};
+const clone = (obj) => JSON.parse(JSON.stringify(obj));
 function setConfiguration(name, configuration) {
   try {
     window.localStorage.setItem(name, JSON.stringify(configuration));
@@ -4347,6 +4644,22 @@ function getConfiguration(name) {
     return null;
   }
 }
+function ensureGroup(conf, group) {
+  const template = GROUP_TEMPLATES[group];
+  if (!conf[group]) {
+    conf[group] = clone(template);
+    setConfiguration(group, conf[group]);
+    return;
+  }
+  let changed = false;
+  Object.keys(template).forEach((key) => {
+    if (!conf[group][key]) {
+      conf[group][key] = clone(template[key]);
+      changed = true;
+    }
+  });
+  if (changed) setConfiguration(group, conf[group]);
+}
 function getConfigurations() {
   const conf = {};
   try {
@@ -4356,31 +4669,205 @@ function getConfigurations() {
   } catch (e) {
     console.error("Failed to get configurations:", e);
   }
-  if (!conf.rpc) {
-    conf.rpc = JSON.parse(JSON.stringify(rpcConfigurationTemplate));
-    setConfiguration("rpc", conf.rpc);
-  } else if (!conf.rpc.fakeElapsed) {
-    conf.rpc.fakeElapsed = JSON.parse(JSON.stringify(rpcConfigurationTemplate.fakeElapsed));
-    setConfiguration("rpc", conf.rpc);
-  }
-  if (!conf.extension) {
-    conf.extension = JSON.parse(JSON.stringify(extensionConfigurationTemplate));
-    setConfiguration("extension", conf.extension);
-  }
+  ensureGroup(conf, "rpc");
+  ensureGroup(conf, "extension");
+  ensureGroup(conf, "features");
   return conf;
 }
 function compare(obj, prop) {
   return JSON.stringify(obj) === JSON.stringify(prop);
 }
 function resetConfiguration() {
+  const keepStats = getConfiguration("stats");
   try {
     window.localStorage.clear();
   } catch (e) {
     console.error("Failed to clear localStorage:", e);
   }
-  setConfiguration("rpc", JSON.parse(JSON.stringify(rpcConfigurationTemplate)));
-  setConfiguration("extension", JSON.parse(JSON.stringify(extensionConfigurationTemplate)));
+  setConfiguration("rpc", clone(rpcConfigurationTemplate));
+  setConfiguration("extension", clone(extensionConfigurationTemplate));
+  setConfiguration("features", clone(featuresConfigurationTemplate));
+  if (keepStats) saveStats(keepStats);
   return getConfigurations();
+}
+const APP_THEMES = {
+  PHXS: [
+    "Currently suffering",
+    "Pushing pixels",
+    "Fighting the pen tool",
+    "Zoomed to 3200%, still not straight",
+    "Hiding layers from the client",
+    "Layer 47 copy 12 final FINAL",
+    "Selecting hair. Send help",
+    "Content-aware filling my feelings",
+    "Ctrl+Z is my love language",
+    "Masking like a pro (allegedly)"
+  ],
+  PPRO: [
+    "Currently suffering",
+    "Cutting on the beat",
+    "Hunting for the perfect cut",
+    "Syncing audio, again",
+    "Ripple deleting bravely",
+    "Media offline. Again",
+    "Waiting on the render bar",
+    "It's not a bug, it's a jump cut",
+    "Scrubbing the timeline for meaning",
+    "Just one more trim",
+    "Praying the autosave worked"
+  ],
+  AEFT: [
+    "Currently suffering",
+    "Keyframing in the dark",
+    "Waiting on a render",
+    "Precomping everything",
+    "Easing every curve",
+    "Expressions: instructions unclear",
+    "RAM preview: 3 frames",
+    "Parenting layers, not my kids",
+    "The comp is fine. Everything is fine",
+    "Nudging one pixel for 40 minutes"
+  ],
+  ILST: [
+    "Currently suffering",
+    "Bending B\xE9ziers",
+    "Wrestling anchor points",
+    "Vector or bust",
+    "Outlining all the strokes",
+    "Pen tool vs me: round 12",
+    "Why is there a stray point?!",
+    "Expand appearance and pray"
+  ],
+  IDSN: [
+    "Currently suffering",
+    "Kerning obsessively",
+    "Chasing the grid",
+    "Paragraph styles all day",
+    "Fixing the widow. Then the orphan",
+    "Overset text, my old friend"
+  ],
+  AUDT: [
+    "Currently suffering",
+    "Riding the waveform",
+    "Hunting background noise",
+    "Normalizing everything",
+    "Removing every single mouth click",
+    "That hum is definitely the fridge"
+  ],
+  FLPR: [
+    "Currently suffering",
+    "Tweening frames",
+    "Drawing one frame at a time",
+    "Onion skins everywhere"
+  ],
+  DRWV: [
+    "Currently suffering",
+    "Debugging a div",
+    "Centering things, allegedly",
+    "It works on my machine"
+  ],
+  AICY: [
+    "Currently suffering",
+    "Polishing copy",
+    "Fitting the headline",
+    "Trimming words to fit"
+  ],
+  PRLD: [
+    "Currently suffering",
+    "Logging footage",
+    "Ingesting clips"
+  ],
+  RUSH: [
+    "Currently suffering",
+    "Cutting on the go",
+    "Quick edit mode",
+    "Editing from the couch"
+  ],
+  MEDIA_ENCODER: [
+    "Currently suffering",
+    "Encoding patiently",
+    "Crunching frames",
+    "Queue: 47 items. Pray"
+  ],
+  DEFAULT: [
+    "Currently suffering",
+    "Creating something",
+    "In the zone",
+    "Deadline energy"
+  ]
+};
+APP_THEMES.PHSP = APP_THEMES.PHXS;
+function getThemeLines(appId) {
+  return APP_THEMES[appId] || APP_THEMES.DEFAULT;
+}
+function pickStatusLine(cfg, appId, nowMs) {
+  if (!cfg || !cfg.enabled) return "";
+  const custom = (cfg.lines || []).map((l) => String(l).trim()).filter(Boolean);
+  const pool = custom.length ? custom : cfg.useThemes === false ? [] : getThemeLines(appId);
+  if (!pool.length) return "";
+  const slot = Math.max(15, parseInt(cfg.intervalSec, 10) || 30) * 1e3;
+  return pool[Math.floor(nowMs / slot) % pool.length];
+}
+function flairText(appName, elapsedMs) {
+  const h = Math.floor(elapsedMs / 36e5);
+  if (h < 1) return "";
+  if (h >= 12) return h + "h in. Are you okay? \u{1F633}";
+  if (h >= 8) return h + "h deep. Touch some grass \u{1F331}";
+  if (h >= 4) return h + "h deep. Hydrate! \u{1F4A7}";
+  if (h >= 2) return h + "h deep in " + appName + ". Send coffee \u2615";
+  return "1h deep in " + appName;
+}
+function prettyTool(key) {
+  if (!key || key === "undefined") return "";
+  const words = String(key).replace(/tool$/i, "").replace(/([a-z])([A-Z])/g, "$1 $2").trim();
+  if (!words) return "";
+  return "Using " + words.charAt(0).toUpperCase() + words.slice(1).toLowerCase() + " tool";
+}
+function isWebhookUrl(url) {
+  return /^https:\/\/(discord|discordapp)\.com\/api\/webhooks\/\d+\/[\w-]+$/i.test(String(url || "").trim());
+}
+function formatDuration(ms) {
+  const mins = Math.floor(ms / 6e4);
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return h > 0 ? h + "h " + m + "m" : m + "m";
+}
+const ACHIEVEMENTS = [
+  { id: "first", icon: "\u{1F44B}", name: "First Steps", desc: "Start your first tracked session", test: (s) => s.sessions >= 1 },
+  { id: "hour1", icon: "\u23F1\uFE0F", name: "Hour One", desc: "Log 1 hour total", test: (s) => s.totalMs >= 36e5 },
+  { id: "hour10", icon: "\u{1F525}", name: "Getting Serious", desc: "Log 10 hours total", test: (s) => s.totalMs >= 36e6 },
+  { id: "hour50", icon: "\u{1F3C5}", name: "Dedicated", desc: "Log 50 hours total", test: (s) => s.totalMs >= 18e7 },
+  { id: "hour100", icon: "\u{1F3C6}", name: "Centurion", desc: "Log 100 hours total", test: (s) => s.totalMs >= 36e7 },
+  { id: "regular", icon: "\u{1F4C5}", name: "Regular", desc: "Open 10 sessions", test: (s) => s.sessions >= 10 },
+  { id: "owl", icon: "\u{1F989}", name: "Night Owl", desc: "Work between midnight and 5am", test: (s) => !!s.nightOwl },
+  { id: "layers", icon: "\u{1F95E}", name: "100 Layers Deep", desc: "Open a document with 100+ layers", test: (s) => s.maxLayers >= 100 },
+  { id: "render1", icon: "\u{1F3AC}", name: "First Render", desc: "Finish a render", test: (s) => s.exports >= 1 },
+  { id: "render25", icon: "\u{1F3ED}", name: "Render Farm", desc: "Finish 25 renders", test: (s) => s.exports >= 25 }
+];
+function defaultStats() {
+  return { totalMs: 0, perApp: {}, sessions: 0, exports: 0, maxLayers: 0, nightOwl: false, unlocked: {}, since: Date.now() };
+}
+function getStats() {
+  const saved = getConfiguration("stats");
+  return Object.assign(defaultStats(), saved || {});
+}
+function saveStats(stats) {
+  try {
+    window.localStorage.setItem("stats", JSON.stringify(stats));
+  } catch (e) {
+    console.error("Failed to save stats:", e);
+  }
+}
+function evaluateAchievements(stats) {
+  const fresh = [];
+  stats.unlocked = stats.unlocked || {};
+  ACHIEVEMENTS.forEach((a) => {
+    if (!stats.unlocked[a.id] && a.test(stats)) {
+      stats.unlocked[a.id] = Date.now();
+      fresh.push(a);
+    }
+  });
+  return fresh;
 }
 
 

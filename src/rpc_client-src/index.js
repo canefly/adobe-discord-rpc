@@ -43,6 +43,56 @@ var configurations = (0, _localstorage.getConfigurations)();
 var interval = 1500;
 var isUpdating = false;
 
+// ---- Fun-feature runtime state ----
+var sessionStart = Date.now();      // real session start (never spoofed) - drives flair + stats
+var lastTick = Date.now();
+var lastStatsSave = 0;
+var lastSig = "";                   // fingerprint of what the host reports, for AFK detection
+var lastChangeAt = Date.now();
+var renderWasActive = false;
+var celebrateUntil = 0;
+var stats = _localstorage.getStats();
+
+function featureOn(name) {
+    var f = configurations.features && configurations.features[name];
+    return !!(f && f.enabled);
+}
+
+if (featureOn("trackStats")) {
+    stats.sessions += 1;
+    _localstorage.evaluateAchievements(stats);
+    _localstorage.saveStats(stats);
+}
+
+function sendStats() {
+    try {
+        var ev = new CSEvent("com.tee.rpc.stats", "APPLICATION");
+        ev.data = stats;
+        csInterface.dispatchEvent(ev);
+    } catch (e) {
+        console.error("Failed to send stats:", e);
+    }
+}
+
+// Opt-in: post a message to the user's own Discord webhook when a render finishes.
+function postWebhook(text) {
+    var cfg = configurations.features && configurations.features.webhook;
+    if (!cfg || !cfg.enabled || !_localstorage.isWebhookUrl(cfg.url)) return;
+    try {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", cfg.url.trim(), true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(JSON.stringify({ content: text, allowed_mentions: { parse: [] } }));
+    } catch (e) {
+        console.error("Webhook post failed:", e);
+    }
+}
+
+function clampText(s) {
+    if (typeof s !== "string") return s;
+    return s.length > 128 ? s.slice(0, 127) + "…" : s;
+}
+
 // Do not initialize if run through dynamic link (After Effects)
 if (appId === "AEFT") {
     csInterface.evalScript("app.activeViewer", function (x) {
@@ -94,6 +144,7 @@ function sendCurrentState() {
         var confEvent = new CSEvent("com.tee.rpc.config.current", "APPLICATION");
         confEvent.data = configurations;
         csInterface.dispatchEvent(confEvent);
+        sendStats();
     } catch (e) {
         console.error("Failed to send current state:", e);
     }
@@ -122,6 +173,8 @@ csInterface.addEventListener('com.tee.rpc.config', function (e) {
 
         if (data && typeof data === 'object') {
             for (var key in data) {
+                // "stats" is owned by this engine; the settings panel must never overwrite it.
+                if (key === "stats") continue;
                 if (Object.prototype.hasOwnProperty.call(data, key)) {
                     (0, _localstorage.setConfiguration)(key, data[key]);
                 }
@@ -174,7 +227,10 @@ async function updateCycle() {
             rpcConf.smallImageText && rpcConf.smallImageText.enabled ? queryHost('smallImageText()') : Promise.resolve(""),
             rpcConf.largeImageText && rpcConf.largeImageText.enabled ? queryHost('largeImageText()') : Promise.resolve(""),
             rpcConf.partySize && rpcConf.partySize.enabled ? queryHost('partySize()') : Promise.resolve("0"),
-            rpcConf.partyMax && rpcConf.partyMax.enabled ? queryHost('partyMax()') : Promise.resolve("0")
+            rpcConf.partyMax && rpcConf.partyMax.enabled ? queryHost('partyMax()') : Promise.resolve("0"),
+            // Optional host helpers: hosts that don't define them simply return "".
+            (featureOn("extraInfo") || featureOn("trackStats")) ? queryHost('extra()') : Promise.resolve(""),
+            featureOn("idle") ? queryHost('activitySig()') : Promise.resolve("")
         ]);
 
         var stateVal = results[0];
@@ -184,14 +240,113 @@ async function updateCycle() {
         var largeTextVal = results[4];
         var partySizeVal = parseInt(results[5], 10) || 0;
         var partyMaxVal = parseInt(results[6], 10) || 0;
+        var extraVal = results[7];
+        var sigVal = results[8];
 
-        props.state = (rpcConf.state && rpcConf.state.enabled && stateVal) ? stateVal : undefined;
-        props.details = (rpcConf.details && rpcConf.details.enabled && detailsVal) ? detailsVal : undefined;
+        var now = Date.now();
+        var feats = configurations.features || {};
+        var hideNames = featureOn("hideFileName");
+        var rendering = stateVal === "Rendering";
+
+        // --- AFK detection: has anything the host reports changed recently? ---
+        var sig = [stateVal, detailsVal, smallKeyVal, extraVal, sigVal].join("|");
+        if (sig !== lastSig) {
+            lastSig = sig;
+            lastChangeAt = now;
+        }
+        var idleMins = (feats.idle && parseInt(feats.idle.minutes, 10)) || 10;
+        var isIdle = featureOn("idle") && !rendering && (now - lastChangeAt) > idleMins * 60000;
+
+        // --- Render celebration: a render just finished ---
+        if (renderWasActive && !rendering && featureOn("celebrations")) {
+            celebrateUntil = now + 20000;
+            lastChangeAt = now;
+            if (featureOn("trackStats")) stats.exports += 1;
+            postWebhook("🎬 Just finished a render in " + (client.name || "Adobe") +
+                (!hideNames && detailsVal ? " — " + detailsVal : "") + "!");
+        }
+        renderWasActive = rendering;
+        var celebrating = now < celebrateUntil;
+
+        // --- Compose the visible text ---
+        var outDetails = detailsVal;
+        var outState = stateVal;
+        var outSmallText = smallTextVal;
+        var outLargeText = largeTextVal;
+
+        if (hideNames) {
+            outDetails = detailsVal ? "Working on a project" : "";
+            outState = "";
+            outSmallText = "";
+        }
+
+        // Tool-aware small-icon text ("Using Brush tool")
+        if (featureOn("toolAware")) {
+            var toolLabel = _localstorage.prettyTool(smallKeyVal);
+            if (toolLabel) {
+                outSmallText = (outSmallText && !hideNames) ? toolLabel + " · " + outSmallText : toolLabel;
+            }
+        }
+
+        // Live project info (canvas size, layers, timeline length...)
+        if (featureOn("extraInfo") && extraVal) {
+            outState = outState ? outState + " • " + extraVal : extraVal;
+        }
+
+        // Rotating, per-app-themed status lines
+        var statusLine = featureOn("statusLines")
+            ? _localstorage.pickStatusLine(feats.statusLines, appId, now) : "";
+        if (statusLine) {
+            var append = feats.statusLines.mode === "append" && outState;
+            outState = append ? outState + " • " + statusLine : statusLine;
+        }
+
+        // Session timer flair on the large-icon hover text
+        var flair = featureOn("sessionFlair")
+            ? _localstorage.flairText(client.name || "Adobe", now - sessionStart) : "";
+        if (flair) outLargeText = flair;
+
+        // AFK overrides, then celebration overrides everything
+        if (isIdle) {
+            outDetails = "Taking a break 💤";
+            outState = flair || "";
+            outSmallText = "";
+        }
+        if (celebrating) {
+            outDetails = "🎉 Just finished a render!";
+        }
+
+        // --- Stats & achievements ---
+        var dt = Math.min(now - lastTick, 5000);
+        lastTick = now;
+        if (featureOn("trackStats")) {
+            if (!isIdle && dt > 0) {
+                stats.totalMs += dt;
+                stats.perApp[appId] = (stats.perApp[appId] || 0) + dt;
+                if (new Date().getHours() < 5) stats.nightOwl = true;
+            }
+            var layerMatch = /(\d+) layers?/.exec(extraVal || "");
+            if (layerMatch) stats.maxLayers = Math.max(stats.maxLayers, parseInt(layerMatch[1], 10));
+            var fresh = _localstorage.evaluateAchievements(stats);
+            if (fresh.length || now - lastStatsSave > 30000) {
+                lastStatsSave = now;
+                _localstorage.saveStats(stats);
+                sendStats();
+                if (fresh.length) {
+                    var achEv = new CSEvent("com.tee.rpc.achievement", "APPLICATION");
+                    achEv.data = fresh.map(function (a) { return a.icon + " " + a.name; });
+                    csInterface.dispatchEvent(achEv);
+                }
+            }
+        }
+
+        props.state = (rpcConf.state && rpcConf.state.enabled && outState) ? clampText(outState) : undefined;
+        props.details = (rpcConf.details && rpcConf.details.enabled && outDetails) ? clampText(outDetails) : undefined;
         props.smallImageKey = (rpcConf.smallImageKey && rpcConf.smallImageKey.enabled && smallKeyVal) ? smallKeyVal : undefined;
-        props.smallImageText = (rpcConf.smallImageText && rpcConf.smallImageText.enabled && smallTextVal) ? smallTextVal : undefined;
-        props.largeImageText = (rpcConf.largeImageText && rpcConf.largeImageText.enabled && largeTextVal) ? largeTextVal : undefined;
-        props.partySize = partySizeVal;
-        props.partyMax = partyMaxVal;
+        props.smallImageText = (rpcConf.smallImageText && rpcConf.smallImageText.enabled && outSmallText) ? clampText(outSmallText) : undefined;
+        props.largeImageText = (rpcConf.largeImageText && rpcConf.largeImageText.enabled && outLargeText) ? clampText(outLargeText) : undefined;
+        props.partySize = isIdle ? 0 : partySizeVal;
+        props.partyMax = isIdle ? 0 : partyMaxVal;
 
         if (rpcConf.largeImageKey && rpcConf.largeImageKey.enabled) {
             var iconChoice = rpcConf.largeImageKey.value;
