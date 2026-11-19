@@ -4,7 +4,7 @@
 
 #define MyAppName "Adobe Discord RPC"
 #define MyAppEdition "Enhanced Edition by Cane"
-#define MyAppVersion "1.0.2"
+#define MyAppVersion "1.1.0"
 #define MyAppPublisher "Cane"
 #define MyAppURL "https://github.com/canefly/adobe-discord-rpc"
 
@@ -17,9 +17,12 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}/issues
 AppUpdatesURL={#MyAppURL}/releases
-DefaultDirName={userappdata}\Adobe\CEP\extensions\com.tee.discord-rpc
+; "Just me" installs to %APPDATA%\Adobe\CEP\extensions; "all users" installs to
+; C:\Program Files (x86)\Common Files\Adobe\CEP\extensions. Setup asks which at startup.
+DefaultDirName={code:GetDefaultDirName}
 DisableDirPage=no
 PrivilegesRequired=lowest
+PrivilegesRequiredOverridesAllowed=dialog
 SetupIconFile=..\icons\favicon.ico
 UninstallDisplayIcon={app}\icons\favicon.ico
 OutputDir=output
@@ -58,10 +61,66 @@ Root: HKCU; Subkey: "Software\Adobe\CSXS.16"; ValueType: string; ValueName: "Pla
 Root: HKCU; Subkey: "Software\Adobe\CSXS.17"; ValueType: string; ValueName: "PlayerDebugMode"; ValueData: "1"; Flags: createvalueifdoesntexist
 
 [Icons]
-Name: "{userprograms}\Adobe Discord RPC\Uninstall Adobe Discord RPC"; Filename: "{uninstallexe}"
-Name: "{userprograms}\Adobe Discord RPC\Open Extension Folder"; Filename: "{app}"
-Name: "{userprograms}\Adobe Discord RPC\GitHub Repository"; Filename: "{#MyAppURL}"
+Name: "{autoprograms}\Adobe Discord RPC\Uninstall Adobe Discord RPC"; Filename: "{uninstallexe}"
+Name: "{autoprograms}\Adobe Discord RPC\Open Extension Folder"; Filename: "{app}"
+Name: "{autoprograms}\Adobe Discord RPC\GitHub Repository"; Filename: "{#MyAppURL}"
 
 [Messages]
 FinishedHeadingLabel=Installation Complete!
-FinishedLabel=Adobe Discord RPC ({#MyAppEdition}) has been installed to your Adobe extensions folder.%n%nPlayerDebugMode has been automatically configured in your Windows registry.%n%nPlease restart Adobe After Effects or Premiere Pro and open the extension from:%nWindow -> Extensions -> Discord RPC.
+FinishedLabel=Adobe Discord RPC ({#MyAppEdition}) has been installed to the Adobe CEP extensions folder you chose.%n%nPlayerDebugMode has been automatically configured in your Windows registry.%n%nPlease restart Adobe After Effects or Premiere Pro and open the extension from:%nWindow -> Extensions -> Discord RPC.
+
+
+[Code]
+const
+  ExtFolder = 'Adobe\CEP\extensions\com.tee.discord-rpc';
+
+function UserCopyPath(): String;
+begin
+  Result := ExpandConstant('{userappdata}') + '\' + ExtFolder;
+end;
+
+function GlobalCopyPath(): String;
+begin
+  Result := ExpandConstant('{commoncf32}') + '\' + ExtFolder;
+end;
+
+// "Install for all users" (admin) -> Program Files CEP folder, otherwise the user's AppData CEP folder.
+function GetDefaultDirName(Param: String): String;
+begin
+  if IsAdminInstallMode then
+    Result := GlobalCopyPath()
+  else
+    Result := UserCopyPath();
+end;
+
+// Adobe apps load extensions from BOTH folders. A stale copy in the other one can
+// shadow this install, which is why presence sometimes "doesn't work" for people.
+function NextButtonClick(CurPageID: Integer): Boolean;
+var
+  OtherPath, OtherLabel: String;
+begin
+  Result := True;
+  if CurPageID = wpSelectDir then
+  begin
+    if IsAdminInstallMode then
+    begin
+      OtherPath := UserCopyPath();
+      OtherLabel := 'your user profile';
+    end
+    else
+    begin
+      OtherPath := GlobalCopyPath();
+      OtherLabel := 'Program Files (all users)';
+    end;
+
+    if FileExists(OtherPath + '\CSXS\manifest.xml') and
+       (CompareText(RemoveBackslashUnlessRoot(WizardDirValue), OtherPath) <> 0) then
+    begin
+      MsgBox('Another copy of Adobe Discord RPC already exists in ' + OtherLabel + ':' + #13#10 + #13#10 +
+             OtherPath + #13#10 + #13#10 +
+             'Adobe apps can load either location. If your status looks stuck or outdated after installing, ' +
+             'update or delete that copy too, or run this installer again and pick the other install mode.',
+             mbInformation, MB_OK);
+    end;
+  end;
+end;

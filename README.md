@@ -10,6 +10,7 @@
 > Original architecture by [Tee](https://github.com/teeteeteeteetee/adobe-discord-rpc).
 
 ### ✨ Enhancements in this Fork:
+- 🎉 **Fun Features (v1.1.0)**: Rotating funny status lines per app, session timer flair ("4h deep, hydrate!"), idle/AFK detection, render celebrations with an optional Discord webhook, tool-aware icon text, live canvas/layer/timeline info, a privacy toggle that hides file and layer names, and a stats & achievements panel. Find them in the **Config** tab.
 - ⏱️ **Spoof Elapsed Time**: Set custom fake elapsed hours & minutes with live ticking timers and one-click presets (1h to 48h).
 - ⚡ **Live Status & Sync**: Real-time Discord presence connection badge with an instant manual sync trigger.
 - 🎨 **Discord Dark UI**: Complete visual overhaul with modern Discord styling and inline status banners.
@@ -26,7 +27,7 @@ Adobe Discord Rich Presence is an extension that connects Adobe apps with Discor
 
 ### Option 1: Standalone Installer (`.exe`)
 1. Download **`Adobe-Discord-RPC-Setup.exe`** from [Releases](https://github.com/canefly/adobe-discord-rpc/releases).
-2. Run the installer and click **Install**.
+2. Run the installer and choose **Install for me only** (`%APPDATA%\Adobe\CEP\extensions`) or **Install for all users** (`C:\Program Files (x86)\Common Files\Adobe\CEP\extensions`, needs Administrator). If your status doesn't update, check that there isn't an old copy in the *other* folder: Adobe loads extensions from both, and the installer warns you if it finds one.
 3. It will automatically install the extension and enable `PlayerDebugMode` in the Windows Registry!
 4. Launch After Effects or Premiere Pro and open:
    `Window` -> `Extensions` -> `Discord RPC`
